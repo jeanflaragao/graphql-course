@@ -17,3 +17,11 @@ INSERT INTO comments (content, post_id, author_id) VALUES
 ('Very helpful, thanks!', 1, 3),
 ('I disagree with this...', 3, 1),
 ('Can you elaborate?', 2, 3);
+
+-- Insert likes
+INSERT INTO likes (post_id, author_id) VALUES
+(1, 2),
+(1, 3),
+(1, 1),
+(3, 1),
+(2, 3);

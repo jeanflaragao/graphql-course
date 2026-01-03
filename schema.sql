@@ -29,8 +29,18 @@ CREATE TABLE comments (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Comments table
+CREATE TABLE likes (
+  id SERIAL PRIMARY KEY,
+  post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
+  author_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Indexes for performance
 CREATE INDEX idx_posts_author ON posts(author_id);
 CREATE INDEX idx_posts_status ON posts(status);
 CREATE INDEX idx_comments_post ON comments(post_id);
 CREATE INDEX idx_comments_author ON comments(author_id);
+CREATE INDEX idx_likes_post ON likes(post_id);
+CREATE INDEX idx_likes_author ON likes(author_id);

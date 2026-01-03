@@ -41,6 +41,7 @@ const typeDefs = gql`
     views: Int!
     author: User!
     comments: [Comment!]!
+    likes: [Like!]
     commentCount: Int!
     createdAt: String!
   }
@@ -48,6 +49,13 @@ const typeDefs = gql`
   type Comment {
     id: ID!
     content: String!
+    post: Post!
+    author: User!
+    createdAt: String!
+  }
+
+  type Like {
+    id: ID!
     post: Post!
     author: User!
     createdAt: String!
@@ -97,7 +105,7 @@ const resolvers = {
       return result.rows;
     },
 
-    user: async (parent, args) => {
+    user: async (parent, args, context) => {
       return context.loaders.userById.load(args.id);
     },
 
@@ -195,6 +203,15 @@ const resolvers = {
 
     commentCount: (parent, args, context) => {
       return context.loaders.commentCountByPostId.load(parent.id);
+    },
+
+    likes: async (parent) => {
+      console.log('Fetching likes for post:', parent.id);
+      const result = await db.query(
+        'SELECT * FROM likes WHERE post_id = $1',
+        [parent.id]
+      );
+      return result.rows;
     }
   },
 
@@ -206,8 +223,22 @@ const resolvers = {
     author: (parent, args, context) => {
       return context.loaders.userById.load(parent.author_id);
     }
-  }
-};
+  },
+
+  Like: {
+    post: async (parent) => {
+      const result = await db.query(
+        'SELECT * FROM likes WHERE post_id = $1',
+        [parent.post_id]
+      );
+      return result.rows[0];
+    },
+
+    author: (parent, args, context) => {
+      return context.loaders.userById.load(parent.author_id);
+    }
+  },
+}
 
 const server = new ApolloServer({
   typeDefs,
