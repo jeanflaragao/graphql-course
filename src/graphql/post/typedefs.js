@@ -29,8 +29,15 @@ export const postTypeDefs = gql`
   }
 
   extend type Query {
+    post(id: ID!): PostResult!
     posts: [Post!]!
-    post(id: ID!): Post
     postsByCategory(category: Category!): [Post!]!
   }
+
+  type PostNotFoundError {
+    statusCode: Int!
+    message: String!
+  }
+
+  union PostResult = Post | PostNotFoundError
 `;
