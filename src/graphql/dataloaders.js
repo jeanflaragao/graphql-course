@@ -1,5 +1,5 @@
 import DataLoader from 'dataloader';
-import db from '../infra/database.js';
+import db from '../../infra/database.js';
 
 // Batch load posts by author IDs
 const batchPostsByAuthorId = async (authorIds) => {
