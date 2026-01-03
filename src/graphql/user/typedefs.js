@@ -13,6 +13,7 @@ export const userTypeDefs = gql`
     email: String!
     role: Role!
     createdAt: String!
+    # posts: [Post!]!  // Uncomment if Post type is defined and you want to link users to their posts
   }
 
   extend type Query {

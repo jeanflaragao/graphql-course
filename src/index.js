@@ -1,7 +1,7 @@
 import { ApolloServer, gql } from 'apollo-server';
 import db from '../infra/database.js';
-import createLoaders from './dataloaders.js';
 import { resolvers, typeDefs } from './graphql/schema.js';
+import { context } from './graphql/context.js';
 
 const typeDefs2 = gql`
   enum Role {
@@ -102,7 +102,9 @@ const typeDefs2 = gql`
 const resolvers2 = {
   Query: {
     users: async () => {
-      const result = await db.query('SELECT * FROM users ORDER BY created_at DESC');
+      const result = await db.query(
+        'SELECT * FROM users ORDER BY created_at DESC',
+      );
       return result.rows;
     },
 
@@ -112,7 +114,7 @@ const resolvers2 = {
 
     posts: async () => {
       const result = await db.query(
-        'SELECT * FROM posts ORDER BY created_at DESC'
+        'SELECT * FROM posts ORDER BY created_at DESC',
       );
       return result.rows;
     },
@@ -124,14 +126,14 @@ const resolvers2 = {
     postsByCategory: async (parent, args) => {
       const result = await db.query(
         'SELECT * FROM posts WHERE category = $1 ORDER BY created_at DESC',
-        [args.category]
+        [args.category],
       );
       return result.rows;
     },
 
     comments: async (parent, args, context) => {
       return context.loaders.commentsByPostId.load(args.postId);
-    }
+    },
   },
 
   Mutation: {
@@ -139,7 +141,7 @@ const resolvers2 = {
       const { name, email, role } = args.input;
       const result = await db.query(
         'INSERT INTO users (name, email, role) VALUES ($1, $2, $3) RETURNING *',
-        [name, email, role || 'READER']
+        [name, email, role || 'READER'],
       );
       console.log('✅ Created user:', result.rows[0]);
       return result.rows[0];
@@ -151,7 +153,7 @@ const resolvers2 = {
         `INSERT INTO posts (title, content, category, author_id, status)
          VALUES ($1, $2, $3, $4, $5)
          RETURNING *`,
-        [title, content, category, authorId, status || 'DRAFT']
+        [title, content, category, authorId, status || 'DRAFT'],
       );
       console.log('✅ Created post:', result.rows[0]);
       return result.rows[0];
@@ -163,7 +165,7 @@ const resolvers2 = {
         `INSERT INTO comments (content, post_id, author_id)
          VALUES ($1, $2, $3)
          RETURNING *`,
-        [content, postId, authorId]
+        [content, postId, authorId],
       );
       console.log('✅ Created comment:', result.rows[0]);
       return result.rows[0];
@@ -172,14 +174,14 @@ const resolvers2 = {
     deletePost: async (parent, args) => {
       const result = await db.query(
         'DELETE FROM posts WHERE id = $1 RETURNING id',
-        [args.id]
+        [args.id],
       );
       return result.rows.length > 0;
-    }
+    },
   },
 
   User: {
-        // USE LOADERS instead of direct queries!
+    // USE LOADERS instead of direct queries!
     posts: (parent, args, context) => {
       return context.loaders.postsByAuthorId.load(parent.id);
     },
@@ -187,10 +189,10 @@ const resolvers2 = {
     comments: async (parent) => {
       const result = await db.query(
         'SELECT * FROM comments WHERE author_id = $1',
-        [parent.id]
+        [parent.id],
       );
       return result.rows;
-    }
+    },
   },
 
   Post: {
@@ -208,12 +210,11 @@ const resolvers2 = {
 
     likes: async (parent) => {
       console.log('Fetching likes for post:', parent.id);
-      const result = await db.query(
-        'SELECT * FROM likes WHERE post_id = $1',
-        [parent.id]
-      );
+      const result = await db.query('SELECT * FROM likes WHERE post_id = $1', [
+        parent.id,
+      ]);
       return result.rows;
-    }
+    },
   },
 
   Comment: {
@@ -223,30 +224,27 @@ const resolvers2 = {
 
     author: (parent, args, context) => {
       return context.loaders.userById.load(parent.author_id);
-    }
+    },
   },
 
   Like: {
     post: async (parent) => {
-      const result = await db.query(
-        'SELECT * FROM likes WHERE post_id = $1',
-        [parent.post_id]
-      );
+      const result = await db.query('SELECT * FROM likes WHERE post_id = $1', [
+        parent.post_id,
+      ]);
       return result.rows[0];
     },
 
     author: (parent, args, context) => {
       return context.loaders.userById.load(parent.author_id);
-    }
+    },
   },
-}
+};
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: () => ({
-    loaders: createLoaders()  // Create fresh loaders for each request
-  })
+  context,
 });
 
 server.listen({ port: 4000 }).then(({ url }) => {
