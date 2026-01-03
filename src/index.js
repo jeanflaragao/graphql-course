@@ -1,8 +1,9 @@
 import { ApolloServer, gql } from 'apollo-server';
 import db from '../infra/database.js';
 import createLoaders from './dataloaders.js';
+import { resolvers, typeDefs } from './graphql/schema.js';
 
-const typeDefs = gql`
+const typeDefs2 = gql`
   enum Role {
     ADMIN
     AUTHOR
@@ -98,7 +99,7 @@ const typeDefs = gql`
   }
 `;
 
-const resolvers = {
+const resolvers2 = {
   Query: {
     users: async () => {
       const result = await db.query('SELECT * FROM users ORDER BY created_at DESC');
