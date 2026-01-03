@@ -1,5 +1,6 @@
 import { ApolloServer, gql } from 'apollo-server';
 import db from '../infra/database.js';
+import createLoaders from './dataloaders.js';
 
 const typeDefs = gql`
   enum Role {
@@ -97,11 +98,7 @@ const resolvers = {
     },
 
     user: async (parent, args) => {
-      const result = await db.query(
-        'SELECT * FROM users WHERE id = $1',
-        [args.id]
-      );
-      return result.rows[0];
+      return context.loaders.userById.load(args.id);
     },
 
     posts: async () => {
@@ -112,11 +109,7 @@ const resolvers = {
     },
 
     post: async (parent, args) => {
-      const result = await db.query(
-        'SELECT * FROM posts WHERE id = $1',
-        [args.id]
-      );
-      return result.rows[0];
+      return context.loaders.postById.load(args.id);
     },
 
     postsByCategory: async (parent, args) => {
@@ -127,12 +120,8 @@ const resolvers = {
       return result.rows;
     },
 
-    comments: async (parent, args) => {
-      const result = await db.query(
-        'SELECT * FROM comments WHERE post_id = $1 ORDER BY created_at DESC',
-        [args.postId]
-      );
-      return result.rows;
+    comments: async (parent, args, context) => {
+      return context.loaders.commentsByPostId.load(args.postId);
     }
   },
 
@@ -181,17 +170,12 @@ const resolvers = {
   },
 
   User: {
-    posts: async (parent) => {
-      console.log(`🔄 Fetching posts for user ${parent.id}`);
-      const result = await db.query(
-        'SELECT * FROM posts WHERE author_id = $1',
-        [parent.id]
-      );
-      return result.rows;
+        // USE LOADERS instead of direct queries!
+    posts: (parent, args, context) => {
+      return context.loaders.postsByAuthorId.load(parent.id);
     },
 
     comments: async (parent) => {
-      console.log(`🔄 Fetching comments for user ${parent.id}`);
       const result = await db.query(
         'SELECT * FROM comments WHERE author_id = $1',
         [parent.id]
@@ -201,48 +185,26 @@ const resolvers = {
   },
 
   Post: {
-    author: async (parent) => {
-      console.log(`🔄 Fetching author for post ${parent.id}`);
-      const result = await db.query(
-        'SELECT * FROM users WHERE id = $1',
-        [parent.author_id]
-      );
-      return result.rows[0];
+    author: (parent, args, context) => {
+      return context.loaders.userById.load(parent.author_id);
     },
 
-    comments: async (parent) => {
-      console.log(`🔄 Fetching comments for post ${parent.id}`);
-      const result = await db.query(
-        'SELECT * FROM comments WHERE post_id = $1',
-        [parent.id]
-      );
-      return result.rows;
+    comments: (parent, args, context) => {
+      return context.loaders.commentsByPostId.load(parent.id);
     },
 
-    commentCount: async (parent) => {
-      const result = await db.query(
-        'SELECT COUNT(*) FROM comments WHERE post_id = $1',
-        [parent.id]
-      );
-      return parseInt(result.rows[0].count);
+    commentCount: (parent, args, context) => {
+      return context.loaders.commentCountByPostId.load(parent.id);
     }
   },
 
   Comment: {
-    post: async (parent) => {
-      const result = await db.query(
-        'SELECT * FROM posts WHERE id = $1',
-        [parent.post_id]
-      );
-      return result.rows[0];
+    post: (parent, args, context) => {
+      return context.loaders.postById.load(parent.post_id);
     },
 
-    author: async (parent) => {
-      const result = await db.query(
-        'SELECT * FROM users WHERE id = $1',
-        [parent.author_id]
-      );
-      return result.rows[0];
+    author: (parent, args, context) => {
+      return context.loaders.userById.load(parent.author_id);
     }
   }
 };
@@ -250,6 +212,9 @@ const resolvers = {
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  context: () => ({
+    loaders: createLoaders()  // Create fresh loaders for each request
+  })
 });
 
 server.listen({ port: 4000 }).then(({ url }) => {
