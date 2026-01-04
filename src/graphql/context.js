@@ -1,8 +1,11 @@
-import createLoaders  from './dataloaders.js';
+import commentLoaders from './comment/dataloaders.js';
+import { postLoaders } from './post/dataloaders.js';
+import { userLoaders } from './user/dataloaders.js';
 
 export const context = () => {
   return {
-    loaders: createLoaders(),
-  }
+    userLoaders: userLoaders(),
+    postLoaders: postLoaders(),
+    commentLoaders: commentLoaders(),
+  };
 };
-

@@ -22,16 +22,30 @@ export const postTypeDefs = gql`
     status: PostStatus!
     views: Int!
     author: User!
-    # comments: [Comment!]!
+    comments: [Comment!]!
+    commentCount: Int!
     # likes: [Like!]
-    # commentCount: Int!
     createdAt: String!
+  }
+
+  input CreatePostInput {
+    title: String!
+    content: String!
+    category: Category!
+    authorId: ID!
+    status: PostStatus = DRAFT
   }
 
   extend type Query {
     post(id: ID!): PostResult!
     posts: [Post!]!
     postsByCategory(category: Category!): [Post!]!
+    #comments(postId: ID!): [Comment!]!
+  }
+
+  extend type Mutation {
+    createPost(input: CreatePostInput!): Post!
+    deletePost(id: ID!): Boolean!
   }
 
   type PostNotFoundError {

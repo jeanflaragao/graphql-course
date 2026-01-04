@@ -1,7 +1,6 @@
 import DataLoader from 'dataloader';
-import db from '../../infra/database.js';
+import db from '../../../infra/database.js';
 
-// Batch load comments by post IDs
 const batchCommentsByPostId = async (postIds) => {
   console.log('📦 BATCHING comments for posts:', postIds);
 
@@ -42,9 +41,9 @@ const batchCommentCounts = async (postIds) => {
 };
 
 // Create all loaders
-const createLoaders = () => ({
+const commentLoaders = () => ({
   commentsByPostId: new DataLoader(batchCommentsByPostId),
   commentCountByPostId: new DataLoader(batchCommentCounts),
 });
 
-export default createLoaders;
+export default commentLoaders;
