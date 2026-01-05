@@ -15,6 +15,7 @@
     "services:wait:database": "node infra/scripts/wait-for-postgres.js"
   },
   "dependencies": {
+    "@graphql-tools/merge": "^9.1.6",
     "apollo-server": "^3.13.0",
     "dataloader": "^2.2.3",
     "dotenv": "^17.2.3",
