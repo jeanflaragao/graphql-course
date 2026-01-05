@@ -29,7 +29,7 @@ CREATE TABLE comments (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Comments table
+-- Likes table
 CREATE TABLE likes (
   id SERIAL PRIMARY KEY,
   post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
@@ -44,3 +44,5 @@ CREATE INDEX idx_comments_post ON comments(post_id);
 CREATE INDEX idx_comments_author ON comments(author_id);
 CREATE INDEX idx_likes_post ON likes(post_id);
 CREATE INDEX idx_likes_author ON likes(author_id);
+CREATE UNIQUE INDEX idx_likes_author_post ON likes (author_id, post_id);
+

@@ -5,6 +5,8 @@ import { postTypeDefs } from './post/typedefs.js';
 import { postResolvers } from './post/resolvers.js';
 import { commentTypeDefs } from './comment/typedefs.js';
 import { commentResolvers } from './comment/resolvers.js';
+import { likeTypeDefs } from './like/typedefs.js';
+import { likeResolvers } from './like/resolvers.js';
 
 const rootTypeDefs = gql`
   type Query {
@@ -27,10 +29,12 @@ export const typeDefs = [
   userTypeDefs,
   postTypeDefs,
   commentTypeDefs,
+  likeTypeDefs,
 ];
 export const resolvers = [
   rootResolvers,
   userResolvers,
   postResolvers,
   commentResolvers,
+  likeResolvers,
 ];

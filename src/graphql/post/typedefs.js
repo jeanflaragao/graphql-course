@@ -24,7 +24,8 @@ export const postTypeDefs = gql`
     author: User!
     comments: [Comment!]!
     commentCount: Int!
-    # likes: [Like!]
+    likes: Int!
+    likedBy: [User!]!
     createdAt: String!
   }
 

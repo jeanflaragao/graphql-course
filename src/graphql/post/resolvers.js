@@ -39,6 +39,14 @@ export const postResolvers = {
     commentCount: (parent, args, context) => {
       return context.commentLoaders.commentCountByPostId.load(parent.id);
     },
+
+    likes: (parent, args, context) => {
+      return context.likeLoaders.likesCountByPostId.load(parent.id);
+    },
+
+    likedBy: (parent, args, context) => {
+      return context.likeLoaders.usersWhoLikedPost.load(parent.id);
+    },
   },
   PostResult: {
     __resolveType(obj) {

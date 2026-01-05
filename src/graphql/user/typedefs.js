@@ -15,6 +15,7 @@ export const userTypeDefs = gql`
     createdAt: String!
     posts: [Post!]!
     comments: [Comment!]!
+    likedPosts: [Post!]!
   }
 
   extend type Query {

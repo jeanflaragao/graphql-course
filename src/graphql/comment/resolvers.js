@@ -2,8 +2,12 @@ import db from '../../../infra/database.js';
 
 export const commentResolvers = {
   Query: {
-    comments: async (parent, args, context) => {
-      return context.commentLoaders.commentsByPostId.load(args.postId);
+    comments: async (parent, args) => {
+      const result = await db.query(
+        'SELECT * FROM comments WHERE post_id = $1',
+        [args.postId],
+      );
+      return result.rows;
     },
   },
 
