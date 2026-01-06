@@ -1,22 +1,22 @@
-import dotenv from 'dotenv'
-import dotenvExpand from 'dotenv-expand'
-import path from 'path'
-import { fileURLToPath } from 'url'
+import dotenv from 'dotenv';
+import dotenvExpand from 'dotenv-expand';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const NODE_ENV = process.env.NODE_ENV || 'development'
+const NODE_ENV = process.env.NODE_ENV || 'development';
 
-const envPath = path.resolve(__dirname, `../.env.${NODE_ENV}`)
+const envPath = path.resolve(__dirname, `../.env.${NODE_ENV}`);
 
-const env = dotenv.config({ path: envPath })
+const env = dotenv.config({ path: envPath });
 
 if (env.error) {
-  throw new Error('❌ Failed to load .env file')
+  throw new Error('❌ Failed to load .env file');
 }
 
-dotenvExpand.expand(env)
+dotenvExpand.expand(env);
 
 /**
  * Centralized, typed access to env vars
@@ -33,7 +33,10 @@ export const ENV = {
     PASSWORD: process.env.POSTGRES_PASSWORD,
     URL: process.env.DATABASE_URL,
   },
-}
+
+  JWT_SECRET: process.env.JWT_SECRET,
+  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
+};
 
 // ---- Validation (fail fast)
 const required = [
@@ -41,10 +44,14 @@ const required = [
   ENV.POSTGRES.DB,
   ENV.POSTGRES.USER,
   ENV.POSTGRES.PASSWORD,
-]
+  ENV.JWT_SECRET,
+  ENV.JWT_EXPIRES_IN,
+];
 
 required.forEach((value, index) => {
   if (!value) {
-    throw new Error(`❌ Missing required environment variable at index ${index}`)
+    throw new Error(
+      `❌ Missing required environment variable at index ${index}`,
+    );
   }
-})
+});
