@@ -1,4 +1,5 @@
 import { gql } from 'apollo-server';
+import { mergeTypeDefs, mergeResolvers } from '@graphql-tools/merge';
 import { userTypeDefs } from './user/typedefs.js';
 import { userResolvers } from './user/resolvers.js';
 import { postTypeDefs } from './post/typedefs.js';
@@ -7,6 +8,10 @@ import { commentTypeDefs } from './comment/typedefs.js';
 import { commentResolvers } from './comment/resolvers.js';
 import { likeTypeDefs } from './like/typedefs.js';
 import { likeResolvers } from './like/resolvers.js';
+import { paginationTypeDefs } from './pagination/typedefs.js';
+import { paginationResolvers } from './pagination/resolvers.js';
+import { authTypeDefs } from './auth/typedefs.js';
+import { authResolvers } from './auth/resolvers.js';
 
 const rootTypeDefs = gql`
   type Query {
@@ -24,17 +29,22 @@ const rootResolvers = {
   },
 };
 
-export const typeDefs = [
+export const typeDefs = mergeTypeDefs([
   rootTypeDefs,
   userTypeDefs,
   postTypeDefs,
   commentTypeDefs,
   likeTypeDefs,
-];
-export const resolvers = [
+  paginationTypeDefs,
+  authTypeDefs,
+]);
+
+export const resolvers = mergeResolvers([
   rootResolvers,
   userResolvers,
   postResolvers,
   commentResolvers,
   likeResolvers,
-];
+  paginationResolvers,
+  authResolvers,
+]);

@@ -41,9 +41,7 @@ const batchCommentCounts = async (postIds) => {
 };
 
 // Create all loaders
-const commentLoaders = () => ({
+export const commentLoaders = () => ({
   commentsByPostId: new DataLoader(batchCommentsByPostId),
   commentCountByPostId: new DataLoader(batchCommentCounts),
 });
-
-export default commentLoaders;

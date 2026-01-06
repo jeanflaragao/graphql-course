@@ -10,7 +10,7 @@ export const userTypeDefs = gql`
   type User {
     id: ID!
     name: String!
-    email: String!
+    email: String
     role: Role!
     createdAt: String!
     posts: [Post!]!
@@ -21,5 +21,18 @@ export const userTypeDefs = gql`
   extend type Query {
     users: [User!]!
     user(id: ID!): User
+  }
+
+  extend type Mutation {
+    # Admin only
+    deleteUser(id: ID!): Boolean!
+    changeUserRole(userId: ID!, role: Role!): User!
+  }
+
+  input CreateUserInput {
+    name: String!
+    email: String!
+    password: String!
+    role: Role = READER
   }
 `;

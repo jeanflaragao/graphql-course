@@ -33,8 +33,14 @@ export const postTypeDefs = gql`
     title: String!
     content: String!
     category: Category!
-    authorId: ID!
     status: PostStatus = DRAFT
+  }
+
+  input UpdatePostInput {
+    title: String
+    content: String
+    category: Category
+    status: PostStatus
   }
 
   extend type Query {
@@ -46,6 +52,7 @@ export const postTypeDefs = gql`
 
   extend type Mutation {
     createPost(input: CreatePostInput!): Post!
+    updatePost(id: ID!, input: UpdatePostInput!): Post!
     deletePost(id: ID!): Boolean!
   }
 
