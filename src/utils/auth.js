@@ -58,3 +58,13 @@ export const extractToken = (authHeader) => {
 
   return null;
 };
+
+/**
+ * Check if user is the owner of a resource
+ */
+export const checkOwner = (userId, loggedInUserId) => {
+  if (userId !== loggedInUserId) {
+    throw new Error('You can only modify your own content');
+  }
+  return true;
+};

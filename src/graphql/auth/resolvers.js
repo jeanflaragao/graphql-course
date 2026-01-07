@@ -4,6 +4,7 @@ import {
   hashPassword,
   comparePassword,
   generateToken,
+  checkOwner,
 } from '../../utils/auth.js';
 import { requireAuth } from '../../utils/permissions.js';
 

@@ -7,7 +7,7 @@ export const userResolvers = {
       return context.userLoaders.userById.load(args.id);
     },
 
-    users: async () => {
+    users: async (parent, args, context) => {
       requireRole(context, ['ADMIN']);
 
       const result = await db.query(
